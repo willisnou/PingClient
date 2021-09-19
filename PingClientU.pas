@@ -115,7 +115,7 @@ begin
     FClient        := TIdIcmpClient.Create(nil);
     SetDefaults;
   except
-    raise Exception.Create('PingU.Create');
+    raise Exception.Create('PingClientU.TPingThread.Create');
   end;
 end;
 
@@ -126,7 +126,7 @@ begin
     if Assigned(FClient) then
       FreeAndNil(FClient);
   except
-    raise Exception.Create('PingU.Destroy');
+    raise Exception.Create('PingClientU.TPingThread.Destroy');
   end;
 end;
 
@@ -160,7 +160,7 @@ begin
       end;
     Exit;
   except
-    raise Exception.Create('PingU.Execute');
+    raise Exception.Create('PingClientU.TPingThread.Execute');
   end;
 end;
 
@@ -173,7 +173,7 @@ begin
     DateTimeToString(lDate, 'dd/mm/yyyy hh:nn:ss.zzz', Now);
     SynchronizedResponse(ReplyStatus, lDate);
   except
-    raise Exception.Create('PingU.HandlePingresponse');
+    raise Exception.Create('PingClientU.TPingThread.HandlePingresponse');
   end;
 end;
 
@@ -207,7 +207,7 @@ begin
     if Assigned(AResponseCallback) then
       FResponseCallback:= AResponseCallback;
   except
-    raise Exception.Create('PingClientU.CreateArgs');
+    raise Exception.Create('PingClientU.TPingClient.CreateArgs');
   end;
 end;
 
@@ -228,7 +228,7 @@ begin
     FThreadList.Clear;
     FStatusList.Clear;
   except
-    raise Exception.Create('PingClientU.Create');
+    raise Exception.Create('PingClientU.TPingClient.Create');
   end;
 end;
 
@@ -244,7 +244,7 @@ begin
     if Assigned(FThreadList) then
       FreeAndNil(FThreadList);
   except
-    raise Exception.Create('PingClientU.Destroy');
+    raise Exception.Create('PingClientU.TPingClient.Destroy');
   end;
 end;
 
@@ -265,7 +265,7 @@ begin
       end;
     end;
   except
-    raise Exception.Create('PingClientU.Terminate');
+    raise Exception.Create('PingClientU.TPingClient.Terminate');
   end;
 end;
 
@@ -297,7 +297,7 @@ begin
     Result:= FFormatedAddrList;
 
   except
-    raise Exception.Create('PingClientU.GetFormatedList');
+    raise Exception.Create('PingClientU.TPingClient.GetFormatedList');
   end;
 end;
 
@@ -309,7 +309,7 @@ begin
       Exit;
     Result:= OpenFolderAndSelectFiles(GetFormatedAddrList);
   except
-    raise Exception.Create('PingClientU.OpenFiles');
+    raise Exception.Create('PingClientU.TPingClient.OpenFiles');
   end;
 end;
 
@@ -321,7 +321,7 @@ begin
     if Assigned(FStatusList) then
       FStatusList.AddOrSetValue(AAddr, stNotStarted);
   except
-    raise Exception.Create('PingClientU.Add');
+    raise Exception.Create('PingClientU.TPingClient.Add');
   end;
 end;
 
@@ -341,7 +341,7 @@ begin
     end;
     Result:= True;
   except
-    raise Exception.Create('PingClientU.Ping');
+    raise Exception.Create('PingClientU.TPingClient.Ping');
   end;
 end;
 
@@ -356,7 +356,7 @@ begin
     for I := 0 to FAddrList.Count-1 do
       FStatusList.AddOrSetValue(FAddrList.Strings[I], stNotStarted);
   except
-    raise Exception.Create('PingClientU.SetAddrs');
+    raise Exception.Create('PingClientU.TPingClient.SetAddrs');
   end;
 end;
 
@@ -367,7 +367,7 @@ begin
   try
     FFinalizeCallback:= AFinalizeCallback;
   except
-    raise Exception.Create('PingClientU.SetFinalizeCallback');
+    raise Exception.Create('PingClientU.TPingClient.SetFinalizeCallback');
   end;
 end;
 
@@ -378,7 +378,7 @@ begin
   try
     FPath:= APath;
   except
-    raise Exception.Create('PingClientU.SetPath');
+    raise Exception.Create('PingClientU.TPingClient.SetPath');
   end;
 end;
 
@@ -387,7 +387,7 @@ begin
   try
     FType:= APingType;
   except
-    raise Exception.Create('PingClientU.SetPingType');
+    raise Exception.Create('PingClientU.TPingClient.SetPingType');
   end;
 end;
 
@@ -398,7 +398,7 @@ begin
   try
     FResponseCallback:= ACallback;
   except
-    raise Exception.Create('PingClientU.SetResponseCallback');
+    raise Exception.Create('PingClientU.TPingClient.SetResponseCallback');
   end;
 end;
 
@@ -407,7 +407,7 @@ begin
   try
     Result:= not (FStatusList.ContainsValue(stNotStarted)) and not (FStatusList.ContainsValue(stInProgress));
   except
-    raise Exception.Create('PingClientU.GetTerminated');
+    raise Exception.Create('PingClientU.TPingClient.GetTerminated');
   end;
 end;
 
@@ -434,13 +434,17 @@ begin
       //Exit;
     end;
   except
-    raise Exception.Create('PingClientU.GetStatus');
+    raise Exception.Create('PingClientU.TPingClient.GetStatus');
   end;
 end;
 
 procedure TPingClient.UpdateStatusCallback(AStr: String);
 begin
-  FStatusList.AddOrSetValue(AStr, stDone);
+  try
+    FStatusList.AddOrSetValue(AStr, stDone);
+  except
+    raise Exception.Create('PingClientU.TPingClient.UpdateStatusCallback');
+  end;
 end;
 
 function TPingClient.OpenZipped(ADeleteSource: boolean = False): boolean;
@@ -451,7 +455,7 @@ begin
       Exit;
     Result:= OpenFolderAndSelectFile(BuildZipFiles(GetFormatedAddrList, FPath, ADeleteSource));
   except
-    raise Exception.Create('PingClientU.OpenZipped');
+    raise Exception.Create('PingClientU.TPingClient.OpenZipped');
   end;
 end;
 
